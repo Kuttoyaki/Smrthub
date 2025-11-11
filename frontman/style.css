@@ -1,0 +1,33 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.card img {
+  height: 240px;
+  object-fit: cover;
+}
+.carousel-item img {
+  height: 480px;
+  object-fit: cover;
+  filter: brightness(85%);
+}
+
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.card-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+#message {
+  min-height: 40px;
+}
