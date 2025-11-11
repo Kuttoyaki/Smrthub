@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok && result.user) {
         localStorage.setItem('user', JSON.stringify(result.user));
         message.innerHTML = `<div class="alert alert-success">✅ เข้าสู่ระบบสำเร็จ! กำลังนำทาง...</div>`;
-        setTimeout(() => window.location.href = 'index.html', 1500);
+        window.location.href = "/index.html";
       } else {
         message.innerHTML = `<div class="alert alert-danger">❌ ${result.message || 'Login failed'}</div>`;
       }
