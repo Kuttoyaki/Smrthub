@@ -2,11 +2,28 @@ import express from 'express';
 import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// สำหรับ ES Module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files (HTML, CSS, JS, images)
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// ส่งหน้า index.html สำหรับ /
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
+// ====================================================
+// Database Connection
+// ====================================================
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -14,7 +31,9 @@ const db = mysql.createConnection({
   database: 'smartwatch_db'
 });
 
+// ====================================================
 // ✅ REGISTER API
+// ====================================================
 app.post('/api/register', async (req, res) => {
   const { username, password, fullname, email } = req.body;
 
@@ -22,15 +41,12 @@ app.post('/api/register', async (req, res) => {
     return res.status(400).json({ message: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
   }
 
-  // ตรวจสอบ username ซ้ำ
   db.query('SELECT * FROM member WHERE username = ?', [username], async (err, results) => {
     if (err) return res.status(500).json({ message: 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์' });
     if (results.length > 0) return res.status(400).json({ message: 'ชื่อผู้ใช้นี้มีอยู่แล้ว' });
 
-    // เข้ารหัสรหัสผ่าน
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // เพิ่มข้อมูลสมาชิกใหม่
     db.query(
       'INSERT INTO member (username, password, fullname, email, role) VALUES (?, ?, ?, ?, ?)',
       [username, hashedPassword, fullname, email, 'user'],
@@ -42,4 +58,36 @@ app.post('/api/register', async (req, res) => {
   });
 });
 
-app.listen(4000, () => console.log('✅ Server running on http://localhost:4000'));
+// ====================================================
+// ✅ LOGIN API
+// ====================================================
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+
+  db.query('SELECT * FROM member WHERE username = ?', [username], async (err, results) => {
+    if (err) return res.status(500).json({ message: 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์' });
+    if (results.length === 0) return res.status(401).json({ message: 'ไม่พบชื่อผู้ใช้ในระบบ' });
+
+    const user = results[0];
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
+
+    res.json({
+      message: 'เข้าสู่ระบบสำเร็จ',
+      user: {
+        member_id: user.member_id,
+        fullname: user.fullname,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+  });
+});
+
+// ====================================================
+// Start server
+// ====================================================
+const PORT = 4000;
+app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
