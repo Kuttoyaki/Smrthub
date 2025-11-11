@@ -40,11 +40,11 @@ function renderNavbar() {
     <li class="nav-item"><a class="nav-link" href="apple.html">Apple</a></li>
     <li class="nav-item"><a class="nav-link" href="garmin.html">Garmin</a></li>
     <li class="nav-item"><a class="nav-link" href="huawei.html">Huawei</a></li>
-    <li class="nav-item"><a class="nav-link" href="register.html">ลงทะเบียนสมาชิก</a></li>
     ${user
       ? `<li class="nav-item"><span class="nav-link text-info">👋 ${user.fullname}</span></li>
          <li class="nav-item"><a class="nav-link text-danger" href="#" id="logoutBtn">ออกจากระบบ</a></li>`
-      : `<li class="nav-item"><a class="nav-link" href="login.html">เข้าสู่ระบบ</a></li>`}
+      : `<li class="nav-item"><a class="nav-link" href="register.html">ลงทะเบียนสมาชิก</a></li>
+         <li class="nav-item"><a class="nav-link" href="login.html">เข้าสู่ระบบ</a></li>`}
   `;
 
   const logoutBtn = document.getElementById('logoutBtn');
