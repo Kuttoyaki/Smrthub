@@ -1,6 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const db = require('../db');
+import mysql from 'mysql2';
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'smartwatch_db'
+});
 
 // ดึงสินค้าทั้งหมด
 router.get('/', (req, res) => {
@@ -35,4 +42,4 @@ router.get('/flagship/all', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

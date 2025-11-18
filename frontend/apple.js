@@ -1,32 +1,31 @@
-const API = 'http://localhost:4000/api/products/Apple';
-const container = document.getElementById('apple-products');
+const API = '/api/products/Apple';
 
 // ✅ โหลดข้อมูลสินค้าจาก Backend
 async function loadAppleProducts() {
-  const res = await fetch(API);
-  const data = await res.json();
-  renderProducts(data);
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
+    renderCarousel(data);
+  } catch (err) {
+    console.error('Error loading Apple products:', err);
+  }
 }
 
-// ✅ แสดงสินค้าใน Grid
-function renderProducts(products) {
-  container.innerHTML = '';
-  products.forEach(p => {
-    container.innerHTML += `
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <img src="${p.image}" class="card-img-top" alt="${p.model}">
-          <div class="card-body">
-            <h5 class="card-title text-center">${p.model}</h5>
-            <p class="text-muted text-center">${p.brand}</p>
-            <p>${p.description}</p>
-            <ul>
-              <li>ระบบปฏิบัติการ: watchOS</li>
-              <li>กันน้ำ: 50 เมตร</li>
-              <li>เซ็นเซอร์: วัดชีพจร / GPS / SpO2</li>
-            </ul>
-            <p class="fw-bold text-primary text-center">฿${p.price.toLocaleString()}</p>
-          </div>
+// ✅ แสดง Carousel จากข้อมูลฐานข้อมูล
+function renderCarousel(products) {
+  const carouselInner = document.querySelector('#appleCarousel .carousel-inner');
+  if (!carouselInner) return;
+  carouselInner.innerHTML = '';
+  products.slice(0, 3).forEach((p, index) => {
+    const activeClass = index === 0 ? 'active' : '';
+    const imageSrc = p.image;
+    carouselInner.innerHTML += `
+      <div class="carousel-item ${activeClass}">
+        <img src="${imageSrc}" class="d-block w-100" alt="${p.model}">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>${p.model}</h5>
+          <p>${p.description}</p>
+          <p class="fw-bold text-primary">฿${parseFloat(p.price).toLocaleString()}</p>
         </div>
       </div>`;
   });

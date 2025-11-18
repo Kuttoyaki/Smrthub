@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import counterRouter from './counter.js';
+import productsRouter from './routes/products.js';
 
 const app = express();
 app.use(cors());
@@ -83,6 +85,26 @@ app.post('/api/login', (req, res) => {
         role: user.role
       }
     });
+  });
+});
+
+// ====================================================
+// Counter API
+// ====================================================
+app.use('/api/counter', counterRouter);
+
+// ====================================================
+// Products API
+// ====================================================
+app.use('/api/products', productsRouter);
+
+// ====================================================
+// Get Member Count API
+// ====================================================
+app.get('/api/counter/total', (req, res) => {
+  db.query('SELECT COUNT(*) AS total FROM member', (err, results) => {
+    if (err) return res.status(500).json({ message: 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์' });
+    res.json({ total: results[0].total || 0 });
   });
 });
 

@@ -1,6 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const db = require('../db');
+import mysql from 'mysql2';
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'smartwatch_db'
+});
 
 // ฟังก์ชันตรวจสอบว่าผู้ใช้งานเคยเข้าชมหรือยัง (ตาม IP/วัน)
 router.post('/', (req, res) => {
@@ -27,4 +34,4 @@ router.post('/', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;
