@@ -1,10 +1,17 @@
+// This file handles the main page functionality, including navigation, displaying flagship products, and visitor counting.
+
+// API endpoints for fetching flagship products and visitor counter
 const API_PRODUCTS = '/api/products/flagship/all';
 const API_COUNTER = '/api/counter';
 const API_COUNTER_TOTAL = '/api/counter/total';
+
+// DOM elements for rendering products
 const container = document.getElementById('flagship-container');
 const carouselInner = document.querySelector('.carousel-inner');
 
-// ✅ ดึงข้อมูลสินค้า Flagship จาก backend
+// Function to load flagship products from the backend.
+// It fetches data and renders both the flagship grid and carousel.
+// Usage: Called automatically when the main page loads.
 async function loadFlagship() {
   const res = await fetch(API_PRODUCTS);
   const data = await res.json();
@@ -12,11 +19,13 @@ async function loadFlagship() {
   renderCarousel(data);
 }
 
-// ✅ แสดงสินค้าแบบ Grid
+// Function to render the flagship products in a grid layout.
+// It clears the container HTML and generates cards for each product.
+// Usage: Called by loadFlagship with the fetched data.
 function renderFlagship(products) {
   container.innerHTML = '';
   products.forEach(p => {
-    const imageSrc = p.image.replace('images/', '');
+    const imageSrc = p.image;
     container.innerHTML += `
       <div class="col-md-4">
         <div class="card h-100 shadow-sm">
@@ -32,13 +41,15 @@ function renderFlagship(products) {
   });
 }
 
-// ✅ แสดง Carousel จากข้อมูลฐานข้อมูล
+// Function to render the flagship products in a carousel.
+// It clears the carousel inner HTML and generates carousel items.
+// Usage: Called by loadFlagship with the fetched data.
 function renderCarousel(products) {
   if (!carouselInner) return;
   carouselInner.innerHTML = '';
   products.forEach((p, index) => {
     const activeClass = index === 0 ? 'active' : '';
-    const imageSrc = p.image.replace('images/', '');
+    const imageSrc = p.image;
     carouselInner.innerHTML += `
       <div class="carousel-item ${activeClass}">
         <img src="${imageSrc}" class="d-block w-100" alt="${p.model}">
@@ -51,12 +62,14 @@ function renderCarousel(products) {
   });
 }
 
-// ✅ ฟังก์ชันแสดง Navbar ตามสถานะ Login
+// Function to render the navigation bar based on login status.
+// It checks localStorage for user data and updates the nav menu accordingly.
+// Usage: Called when the page loads.
 function renderNavbar() {
   const navMenu = document.getElementById('nav-menu');
   const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!navMenu) return; // ถ้าไม่มี navbar ในบางหน้า
+  if (!navMenu) return; // If navbar is not present on some pages
 
   navMenu.innerHTML = `
     <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
@@ -80,7 +93,9 @@ function renderNavbar() {
   }
 }
 
-// ✅ จำกัดการเข้าหน้า Apple / Garmin / Huawei
+// Function to protect pages that require login.
+// It checks if the current page is protected and redirects to login if not logged in.
+// Usage: Called when the page loads.
 function protectPages() {
   const protectedPages = ['apple.html', 'garmin.html', 'huawei.html'];
   const path = window.location.pathname.split('/').pop();
@@ -92,15 +107,20 @@ function protectPages() {
   }
 }
 
+// Render navbar and protect pages on load
 renderNavbar();
 protectPages();
 
-// ✅ นับจำนวนผู้เข้าชม (1 IP ต่อวัน)
+// Function to count visitors (one per IP per day).
+// It sends a POST request to the counter API.
+// Usage: Called automatically when the page loads.
 async function countVisitor() {
   await fetch(API_COUNTER, { method: 'POST' });
 }
 
-// ✅ แสดงจำนวนผู้เข้าชมใน footer
+// Function to display the total visitor count in the footer.
+// It fetches the total count and updates the footer text.
+// Usage: Called automatically when the page loads.
 async function displayVisitorCount() {
   const res = await fetch(API_COUNTER_TOTAL);
   const data = await res.json();
@@ -110,6 +130,7 @@ async function displayVisitorCount() {
   }
 }
 
+// Load flagship products, count visitor, and display visitor count on page load
 loadFlagship();
 countVisitor();
 displayVisitorCount();

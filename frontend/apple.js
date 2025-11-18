@@ -1,6 +1,12 @@
+// This file handles loading and displaying Apple products on the Apple page.
+// It fetches the first 3 Apple products from the database and displays them in a carousel.
+
+// API endpoint for fetching Apple products from the backend
 const API = '/api/products/Apple';
 
-// ✅ โหลดข้อมูลสินค้าจาก Backend
+// Function to load Apple products from the backend API.
+// It fetches data, handles errors with try-catch, and renders the carousel.
+// Usage: Called automatically when the page loads.
 async function loadAppleProducts() {
   try {
     const res = await fetch(API);
@@ -11,7 +17,9 @@ async function loadAppleProducts() {
   }
 }
 
-// ✅ แสดง Carousel จากข้อมูลฐานข้อมูล
+// Function to render the carousel with the first 3 products.
+// It clears the carousel inner HTML, slices the products array to 3, and generates HTML for each carousel item.
+// Usage: Called by loadAppleProducts with the fetched data.
 function renderCarousel(products) {
   const carouselInner = document.querySelector('#appleCarousel .carousel-inner');
   if (!carouselInner) return;
@@ -31,4 +39,5 @@ function renderCarousel(products) {
   });
 }
 
+// Load Apple products when the page loads
 loadAppleProducts();
